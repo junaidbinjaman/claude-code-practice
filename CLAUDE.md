@@ -2,33 +2,35 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Project Overview
+## Project Context
 
-Finance Tracker — a React expense/income tracker app. Course starter project that intentionally contains bugs, poor UI, and messy code to be fixed as exercises.
+Finance Tracker is the starter project for the Code with Mosh Claude Code course. Per the README, it is **intentionally** shipped with a bug, poor UI, and messy code — all of which are fixed as course exercises. When you encounter smells, do not assume they are accidental; confirm with the user before "cleaning up" unrelated code.
+
+Stack: React 19, Vite 7, plain CSS, JavaScript (no TypeScript, no tests, no backend).
 
 ## Commands
 
-- `npm run dev` — start Vite dev server (http://localhost:5173)
-- `npm run build` — production build to `dist/`
-- `npm run lint` — ESLint across all JS/JSX files
-- `npm run preview` — preview production build
+| Command | Purpose |
+|---|---|
+| `npm install` | Install dependencies |
+| `npm run dev` | Start Vite dev server on http://localhost:5173 |
+| `npm run build` | Production build to `dist/` |
+| `npm run preview` | Serve the built `dist/` locally |
+| `npm run lint` | Run ESLint across the repo |
 
-No test framework is configured.
+There is no test script configured.
 
 ## Architecture
 
-Single-component React app (React 19, Vite 7, plain CSS, no TypeScript).
+The entire app is one component. `src/main.jsx` mounts `<App />` inside React `StrictMode`; `src/App.jsx` owns all state, form handling, derived totals, filtering, and rendering. There is no router, no context, no external store, and no persistence — transactions are seeded in `useState` and disappear on reload.
 
-All application logic lives in `src/App.jsx` — state, form handling, filtering, and rendering are co-located in one component. There is no routing, no backend, and no external state management.
+Because everything lives in `App.jsx`, most tasks will involve editing that single file. If a task grows beyond cosmetic changes, consider whether the user wants the component split up before silently refactoring.
 
-Transaction data is hardcoded in component state (no persistence). Amounts are stored as strings, which causes arithmetic bugs in the summary calculations (string concatenation instead of numeric addition).
+## Gotchas
 
-## Known Issues
+- **Amounts are stored as strings** in both seed data and the add-transaction form. The `totalIncome`/`totalExpenses` reducers use `+`, which concatenates strings rather than summing. This is the intentional starter bug — don't "fix" it unless the task asks for it.
+- **StrictMode** is enabled, so effects and some state updates run twice in dev. Keep this in mind when debugging.
 
-- `amount` values are strings — `totalIncome`/`totalExpenses` use `reduce` with `+` which concatenates instead of summing
-- "Freelance Work" seed data is marked as `type: "expense"` but is logically income
-- No delete functionality despite `.delete-btn` styles existing in CSS
+## Lint Rules
 
-## Lint Configuration
-
-ESLint uses flat config (`eslint.config.js`) with `react-hooks` and `react-refresh` plugins. The `no-unused-vars` rule ignores variables starting with uppercase or underscore (`varsIgnorePattern: '^[A-Z_]'`).
+ESLint flat config (`eslint.config.js`) extends `@eslint/js` recommended, `eslint-plugin-react-hooks`, and `eslint-plugin-react-refresh` (Vite preset). The `no-unused-vars` rule is configured with `varsIgnorePattern: '^[A-Z_]'`, so PascalCase and underscore-prefixed identifiers are allowed to go unused.
